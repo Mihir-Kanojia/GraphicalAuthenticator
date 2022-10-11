@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "276549495357",
+    "project_id": "graphical-authenticator",
+    "storage_bucket": "graphical-authenticator.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:276549495357:android:894eceec5861226b7e5854",
+        "android_client_info": {
+          "package_name": "com.example.graphicalauthenticator"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "276549495357-kmmreui24deoupplffeoge0evs60ap2f.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBYKtWYiUzVs0dEs5d0APuixpO1_EgicrQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "276549495357-kmmreui24deoupplffeoge0evs60ap2f.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
