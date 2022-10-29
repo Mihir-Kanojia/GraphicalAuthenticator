@@ -1,10 +1,11 @@
 plugins {
     id 'com.android.application'
-
+    id 'com.chaquo.python'
 }
 
 android {
     compileSdk 32
+//    ndkVersion '21.4.7075529'
 
     defaultConfig {
         applicationId "com.example.graphicalauthenticator"
@@ -14,6 +15,30 @@ android {
         versionName "1.0"
         multiDexEnabled true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        python {
+            pip {
+                install "opencv-python"
+                install "scikit-image"
+            }
+        }
+
+        sourceSets {
+            main {
+                python {
+                    srcDirs = ['src/main/python']
+                }
+            }
+        }
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+
+        python {
+            buildPython "C:/Users/User/AppData/Local/Programs/Python/Python38-32/python.exe"
+        }
+
     }
 
     buildTypes {
@@ -35,7 +60,6 @@ android {
 //        dataBinding = true
 //    }
 }
-
 
 
 dependencies {

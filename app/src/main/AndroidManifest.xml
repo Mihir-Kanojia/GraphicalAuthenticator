@@ -2,7 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.graphicalauthenticator">
 
-
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -13,24 +12,30 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GraphicalAuthenticator">
         <activity
-            android:name=".ui.auth.EmailRegistrationActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.auth.EmailLoginActivity"
-            android:exported="true">
+            android:name=".ui.auth.ImageAuthActivity"
+            android:exported="true" >
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".ui.auth.EmailRegistrationActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.auth.EmailLoginActivity"
+            android:exported="true">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
             android:name=".MainActivity"
-            android:exported="false">
-
-        </activity>
+            android:exported="false" />
     </application>
 
 </manifest>
