@@ -56,13 +56,15 @@ public class ImageAuthActivity extends AppCompatActivity {
     public static Path path = new Path();
     public static Paint paintBrush = new Paint();
 
-//    private PaintView paintView;
+    //    private PaintView paintView;
     //    private DrawingView drawingView;
     private MyDrawView myDrawView;
     private Display drawingView;
 
     private static final String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    Uri contentUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +74,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
         setContentView(binding.getRoot());
-        verifyStoragePermissions(this);
+//        verifyStoragePermissions(this);
 
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
@@ -140,83 +142,28 @@ public class ImageAuthActivity extends AppCompatActivity {
 //                        ImageView imageView = findViewById(R.id.imageView);
 //                        imageView.buildDrawingCache();
 //                        Bitmap b = imageView.getDrawingCache();
-                        findViewById(R.id.imageView2).setBackground(new BitmapDrawable(getResources(), b));
+//                        findViewById(R.id.imageView2).setBackground(new BitmapDrawable(getResources(), b));
                         if (addJpgSignatureToGallery(b)) {
                             Toast.makeText(ImageAuthActivity.this, "Signature saved into the Gallery", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
+
+
                         }
-
-
-                        String root = Environment.getExternalStorageDirectory().toString();
-                        File myDir = new File(root);
-                        myDir.mkdirs();
-                        String fname = "Image-" + "image_name" + ".jpg";
-                        File file = new File(myDir, fname);
-
-
-
-                        FileOutputStream fos = null;
-                        try {
-                            fos = new FileOutputStream(file);
-                        } catch (FileNotFoundException e) {
-                            Toast.makeText(ImageAuthActivity.this, "Exception" + e, Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                            Log.d(TAG, "run: catch  "+e);
-                        }
-                        if (b != null){}
-//                            b.compress(Bitmap.CompressFormat.PNG, 95, fos);
-                        else
-                            Toast.makeText(ImageAuthActivity.this, "Null Bitmap", Toast.LENGTH_SHORT).show();
-
                     }
                 });
 
-//                parent.setDrawingCacheEnabled(true);
-//                Bitmap b = parent.getDrawingCache();
-//
-//                Bitmap b;
-//                parent.setDrawingCacheEnabled(true);
-//
-//                view.measure(View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED),
-//                        View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
-//                view.layout(0, 0, view.getMeasuredWidth(), view.getMeasuredHeight());
-//
-//                view.buildDrawingCache(true);
-//                b = Bitmap.createBitmap(view.getDrawingCache());
 
-//                b = Bitmap.createBitmap(parent.getDrawingCache());
-//                parent.setDrawingCacheEnabled(false);
-
-//                b = BitmapFactory.decodeResource(getResources(), R.id.constraintLayout);
-
-                /////////////////////////////
-//                String root = Environment.getExternalStorageDirectory().toString();
-//                File myDir = new File(root);
-//                myDir.mkdirs();
-//                String fname = "Image-" + "image_name" + ".jpg";
-//                File file = new File(myDir, fname);
-//
-//                FileOutputStream fos = null;
-//                try {
-//                    fos = new FileOutputStream(file);
-//                } catch (FileNotFoundException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                b.compress(Bitmap.CompressFormat.PNG, 95, fos);
-
-
+                binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        myDrawView.clear();
+                    }
+                });
             }
-        });
 
-
-        binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDrawView.clear();
-            }
         });
+    }
 
 //        if (!Python.isStarted())
 //            Python.start(new AndroidPlatform(this));
@@ -228,7 +175,6 @@ public class ImageAuthActivity extends AppCompatActivity {
 //        obj = pyObj.callAttr("main", "2", "2");
 //        Log.d(TAG, "onCreate: obj"+ obj.toString());
 
-    }
 
     public Bitmap loadBitmapFromView(View view) {
 //        if (v.getMeasuredHeight() <= 0) {
@@ -291,12 +237,12 @@ public class ImageAuthActivity extends AppCompatActivity {
 
     private void scanMediaFile(File photo) {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        Uri contentUri = Uri.fromFile(photo);
+        contentUri = Uri.fromFile(photo);
         mediaScanIntent.setData(contentUri);
         ImageAuthActivity.this.sendBroadcast(mediaScanIntent);
     }
 
-    public static void verifyStoragePermissions(Activity activity) {
+    public void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 

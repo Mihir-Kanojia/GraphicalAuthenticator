@@ -1,6 +1,7 @@
 package com.example.graphicalauthenticator.ui.auth;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
@@ -11,17 +12,28 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.graphicalauthenticator.Constants;
 import com.example.graphicalauthenticator.MainActivity;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityEmailRegistrationBinding;
 import com.example.graphicalauthenticator.managers.ActivitySwitchManager;
+import com.example.graphicalauthenticator.model.User;
+import com.example.graphicalauthenticator.repository.FirestoreRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Transaction;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 public class EmailRegistrationActivity extends AppCompatActivity {
@@ -29,6 +41,8 @@ public class EmailRegistrationActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private boolean doubleBackToExitPressedOnce = false;
     private ActivityEmailRegistrationBinding binding;
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private final FirestoreRepository repository = new FirestoreRepository();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,7 +74,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
     private void verifyAndCreateUser() {
 
-        String userName = "";
+        String userName;
         String email = "";
         String password = "";
 
@@ -88,7 +102,31 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
                     private void updateUI(FirebaseUser user) {
 
+//                        FirebaseFirestore db;
+//                        Map<String,Object> userObject = new HashMap<>();
+//                        userObject.put("uerName",userName);
+//                        userObject.put("createDateTime",new Date());
+                        User userObj = new User(userName, "", new Date());
+                        repository.getFirestoreDB().runTransaction(new Transaction.Function<Void>() {
+                            @Nullable
+                            @Override
+                            public Void apply(@NonNull Transaction transaction) {
+                                User userObj = new User(userName, "", new Date());
+                                transaction.set(repository.getUserProfileCollection().document(Constants.UserAuthID), userObj);
+                                return null;
+                            }
+                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void unused) {
+                                Toast.makeText(EmailRegistrationActivity.this, "User Created Successfully", Toast.LENGTH_SHORT).show();
+                            }
+                        }).addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(EmailRegistrationActivity.this, "Failure, Try again later", Toast.LENGTH_SHORT).show();
 
+                            }
+                        });
 
                         Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                         new ActivitySwitchManager(EmailRegistrationActivity.this, MainActivity.class).openActivity();
