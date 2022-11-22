@@ -88,6 +88,8 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
                     private void updateUI(FirebaseUser user) {
 
+
+
                         Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
                         new ActivitySwitchManager(EmailRegistrationActivity.this, MainActivity.class).openActivity();
 
