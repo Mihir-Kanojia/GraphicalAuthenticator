@@ -11,43 +11,30 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
-import android.view.WindowManager;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
-import com.chaquo.python.android.AndroidPlatform;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityImageAuthBinding;
 import com.example.graphicalauthenticator.ui.view.Display;
-import com.example.graphicalauthenticator.ui.view.DrawingView;
 import com.example.graphicalauthenticator.ui.view.MyDrawView;
-import com.example.graphicalauthenticator.ui.view.PaintView;
+//import com.example.graphicalauthenticator.ui.view.PaintView;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-
-import static android.content.ContentValues.TAG;
-import static com.example.graphicalauthenticator.ui.view.Display.colorList;
-import static com.example.graphicalauthenticator.ui.view.Display.currentBrush;
-import static com.example.graphicalauthenticator.ui.view.Display.pathList;
 
 public class ImageAuthActivity extends AppCompatActivity {
 
@@ -99,23 +86,23 @@ public class ImageAuthActivity extends AppCompatActivity {
 //        binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View view) {
-//                pathList.clear();
-//                colorList.clear();
-//                path.reset();
-//            }
-//        });
-
-//        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                try {
-//                    drawingView.saveImage();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        });
-//////////////////////////////////////////////////////////
+//     ////////////////////           pathList.clear();
+////                colorList.clear();
+////                path.reset();
+////            }
+////        });
+//
+////        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
+////            @Override
+////            public void onClick(View view) {
+////                try {
+////                    drawingView.saveImage();
+////                } catch (IOException e) {
+////                    e.printStackTrace();
+////                }
+////            }
+////        });
+////////////////////////////////////////
 
 
         ConstraintLayout parent = (ConstraintLayout) findViewById(R.id.constraintLayout);
@@ -165,8 +152,10 @@ public class ImageAuthActivity extends AppCompatActivity {
         });
     }
 
-//        if (!Python.isStarted())
-//            Python.start(new AndroidPlatform(this));
+//        if(!Python.isStarted())
+//                Python.start(new
+//
+//    AndroidPlatform(this));
 //
 //        Python py = Python.getInstance();
 //        PyObject pyObj = py.getModule("script");
@@ -240,6 +229,14 @@ public class ImageAuthActivity extends AppCompatActivity {
         contentUri = Uri.fromFile(photo);
         mediaScanIntent.setData(contentUri);
         ImageAuthActivity.this.sendBroadcast(mediaScanIntent);
+
+
+        Python py = Python.getInstance();
+        PyObject pyObj = py.getModule("script");
+        PyObject obj = null;
+
+        obj = pyObj.callAttr("main", "2", "2");
+        Log.d("TAG", "onCreate: obj" + obj.toString());
     }
 
     public void verifyStoragePermissions(Activity activity) {
