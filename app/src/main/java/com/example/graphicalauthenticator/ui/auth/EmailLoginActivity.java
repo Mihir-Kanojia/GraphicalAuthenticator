@@ -81,10 +81,7 @@ public class EmailLoginActivity extends AppCompatActivity {
                                     Toast.LENGTH_SHORT).show();
 //                                    updateUI(null);
                         }
- 
-
                     }
-
                     private void updateUI(FirebaseUser user) {
                         new ActivitySwitchManager(EmailLoginActivity.this, MainActivity.class).openActivity();
                     }
