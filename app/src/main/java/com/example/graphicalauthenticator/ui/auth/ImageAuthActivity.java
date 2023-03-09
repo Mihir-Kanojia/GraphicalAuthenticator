@@ -25,6 +25,7 @@ import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
+import com.chaquo.python.android.AndroidPlatform;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityImageAuthBinding;
 import com.example.graphicalauthenticator.ui.view.Display;
@@ -150,19 +151,17 @@ public class ImageAuthActivity extends AppCompatActivity {
             }
 
         });
-    }
 
-//        if(!Python.isStarted())
-//                Python.start(new
-//
-//    AndroidPlatform(this));
+//        if (!Python.isStarted())
+//            Python.start(new AndroidPlatform(this));
 //
 //        Python py = Python.getInstance();
 //        PyObject pyObj = py.getModule("script");
 //        PyObject obj = null;
 //
 //        obj = pyObj.callAttr("main", "2", "2");
-//        Log.d(TAG, "onCreate: obj"+ obj.toString());
+//        Log.d("TAG", "onCreate: obj" + obj.toString());
+    }
 
 
     public Bitmap loadBitmapFromView(View view) {
@@ -229,13 +228,16 @@ public class ImageAuthActivity extends AppCompatActivity {
         contentUri = Uri.fromFile(photo);
         mediaScanIntent.setData(contentUri);
         ImageAuthActivity.this.sendBroadcast(mediaScanIntent);
+        Log.d("TAG", "scanMediaFile: URI: "+contentUri);
 
+        if (!Python.isStarted())
+            Python.start(new AndroidPlatform(this));
 
         Python py = Python.getInstance();
         PyObject pyObj = py.getModule("script");
         PyObject obj = null;
-
-        obj = pyObj.callAttr("main", "2", "2");
+        String myPath = contentUri.getPath();
+        obj = pyObj.callAttr("main", myPath, myPath);
         Log.d("TAG", "onCreate: obj" + obj.toString());
     }
 
