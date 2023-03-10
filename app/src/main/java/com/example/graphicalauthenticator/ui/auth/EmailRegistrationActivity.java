@@ -5,6 +5,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -27,6 +28,8 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
@@ -35,6 +38,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+
+import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
+import static com.example.graphicalauthenticator.Constants.UserAuthID;
 
 public class EmailRegistrationActivity extends AppCompatActivity {
 
@@ -102,35 +108,39 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
                     private void updateUI(FirebaseUser user) {
 
-//                        FirebaseFirestore db;
-//                        Map<String,Object> userObject = new HashMap<>();
-//                        userObject.put("uerName",userName);
-//                        userObject.put("createDateTime",new Date());
+                        FirebaseFirestore db = FirebaseFirestore.getInstance();
+                        CollectionReference usersRef = db.collection("users");
+                        String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        String userId2 = user.getUid();
+
+                        Log.d("TAG", "updateUI getCurrUser userId: " + userId);
+                        Log.d("TAG", "updateUI getCurrUser userId2: " + userId2);
+                        Log.d("TAG", "updateUI getCurrUser UserAuthID: " + UserAuthID);
+
+
                         User userObj = new User(userName, "", new Date());
-                        repository.getFirestoreDB().runTransaction(new Transaction.Function<Void>() {
-                            @Nullable
-                            @Override
-                            public Void apply(@NonNull Transaction transaction) {
-                                User userObj = new User(userName, "", new Date());
-                                transaction.set(repository.getUserProfileCollection().document(Constants.UserAuthID), userObj);
-                                return null;
-                            }
-                        }).addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Toast.makeText(EmailRegistrationActivity.this, "User Created Successfully", Toast.LENGTH_SHORT).show();
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Toast.makeText(EmailRegistrationActivity.this, "Failure, Try again later", Toast.LENGTH_SHORT).show();
+                        Map<String, Object> userMap = userObj.toMap();
 
-                            }
-                        });
+                        usersRef.document(userId2).set(userMap)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                        Log.d("TAG", "User added with ID: " + userId);
+                                        Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+//                                        new ActivitySwitchManager(EmailRegistrationActivity.this, ImageAuthActivity.class).openActivity();
+                                        Intent intent = new Intent(EmailRegistrationActivity.this, ImageAuthActivity.class);
+                                        intent.putExtra(CREATE_NEW_SIGNATURE, true);
+                                        startActivity(intent);
 
-                        Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
-                        new ActivitySwitchManager(EmailRegistrationActivity.this, MainActivity.class).openActivity();
-
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        Log.w("TAG", "Error adding user", e);
+                                        Toast.makeText(EmailRegistrationActivity.this, "Try again later.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
                     }
                 });
 

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -23,6 +24,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
+
+import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
 
 public class EmailLoginActivity extends AppCompatActivity {
 
@@ -98,7 +101,10 @@ public class EmailLoginActivity extends AppCompatActivity {
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null) {
-            new ActivitySwitchManager(this, MainActivity.class).openActivity();
+//            new ActivitySwitchManager(this, MainActivity.class).openActivity();
+            Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
+            intent.putExtra(CREATE_NEW_SIGNATURE, true);
+            startActivity(intent);
         }
     }
 

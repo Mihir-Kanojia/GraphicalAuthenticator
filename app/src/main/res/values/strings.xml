@@ -10,5 +10,11 @@
     <string name="name">Name</string>
     <string name="register_here">Register here</string>
     <string name="not_registered_yet">Not registered yet</string>
-    <string name="verify">Verify</string>
+    <string name="next">Continue</string>
+    <string name="sign1Title">Create Your Signature</string>
+    <string name="sign1Desc">Please draw your signature in the space\nprovided below.This signature will be \nused for authentication purposes.</string>
+    <string name="sign2Title">Re-Draw Your Signature</string>
+    <string name="sign2Desc">Please draw your signature in the space \nprovided below to confirm that it matches \nthe signature you created earlier.</string>
+    <string name="loginTitle">Sign in with Your Signature</string>
+    <string name="loginDesc">Draw your signature using your finger in the space provided below to authenticate your login.</string>
 </resources>

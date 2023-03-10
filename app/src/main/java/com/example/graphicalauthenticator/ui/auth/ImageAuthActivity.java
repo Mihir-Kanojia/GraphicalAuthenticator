@@ -20,6 +20,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.util.Log;
+import android.util.Size;
 import android.view.View;
 import android.widget.Toast;
 
@@ -30,12 +31,16 @@ import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityImageAuthBinding;
 import com.example.graphicalauthenticator.ui.view.Display;
 import com.example.graphicalauthenticator.ui.view.MyDrawView;
+import com.google.firebase.installations.Utils;
 //import com.example.graphicalauthenticator.ui.view.PaintView;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+
+import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
 
 public class ImageAuthActivity extends AppCompatActivity {
 
@@ -51,8 +56,11 @@ public class ImageAuthActivity extends AppCompatActivity {
 
     private static final String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-
-    Uri contentUri;
+    private Boolean isNewSignature = false;
+    private Boolean firstSignature = true;
+    private Uri contentUri;
+    private File signature1;
+    private File signature2;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +70,19 @@ public class ImageAuthActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
         setContentView(binding.getRoot());
+
+        Intent intent = getIntent();
+        isNewSignature = intent.getBooleanExtra(CREATE_NEW_SIGNATURE, false);
+
+        Toast.makeText(this, "" + isNewSignature, Toast.LENGTH_SHORT).show();
+        if (isNewSignature) {
+            binding.btnVerify.setText("Next");
+            firstSignature = true;
+            updateUiAccordingly(1);
+        } else {
+            updateUiAccordingly(3);
+        }
+
 //        verifyStoragePermissions(this);
 
 //        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
@@ -106,7 +127,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 ////////////////////////////////////////
 
 
-        ConstraintLayout parent = (ConstraintLayout) findViewById(R.id.constraintLayout);
+        ConstraintLayout parent = findViewById(R.id.constraintLayout);
         myDrawView = new MyDrawView(ImageAuthActivity.this);
         parent.addView(myDrawView);
 
@@ -115,6 +136,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 //        drawingView = view.findViewById(R.id.paintView);
 
         drawingView = findViewById(R.id.paintView);
+
 
         binding.btnVerify.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -125,33 +147,65 @@ public class ImageAuthActivity extends AppCompatActivity {
                 drawingView.post(new Runnable() {
                     @Override
                     public void run() {
-                        Bitmap b = loadBitmapFromView(myDrawView);
+
+                        Bitmap signatureBitmap = loadBitmapFromView(myDrawView);
 //                        Bitmap b = loadBitmapFromView(findViewById(R.id.constraintLayout));
 //                        ImageView imageView = findViewById(R.id.imageView);
 //                        imageView.buildDrawingCache();
 //                        Bitmap b = imageView.getDrawingCache();
 //                        findViewById(R.id.imageView2).setBackground(new BitmapDrawable(getResources(), b));
-                        if (addJpgSignatureToGallery(b)) {
+
+                        File cacheDir = ImageAuthActivity.this.getCacheDir();
+                        File signatureFile1 = new File(cacheDir, "signature1.png");
+                        File signatureFile2 = new File(cacheDir, "signature2.png");
+                        try {
+
+                            FileOutputStream outputStream1, outputStream2;
+                            if (isNewSignature) {
+                                if (firstSignature) {
+                                    outputStream1 = new FileOutputStream(signatureFile1);
+                                    signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream1);
+                                    updateUiAccordingly(2);
+                                    firstSignature = false;
+                                } else {
+                                    outputStream2 = new FileOutputStream(signatureFile2);
+                                    signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
+                                    checkPythonModule(signatureFile1, signatureFile2);
+                                }
+                            }
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                        }
+
+
+//                        try (FileOutputStream outputStream = new FileOutputStream(signatureFile1)) {
+//                            signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
+//                            checkPythonModule(signatureFile1, signatureFile2);
+//                        } catch (IOException e) {
+//                            e.printStackTrace();
+//                        }
+
+
+                        if (addJpgSignatureToGallery(signatureBitmap)) {
                             Toast.makeText(ImageAuthActivity.this, "Signature saved into the Gallery", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
-
-
                         }
                     }
                 });
 
 
-                binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View view) {
-                        myDrawView.clear();
-                    }
-                });
             }
 
         });
 
+
+        binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                myDrawView.clear();
+            }
+        });
 //        if (!Python.isStarted())
 //            Python.start(new AndroidPlatform(this));
 //
@@ -161,6 +215,57 @@ public class ImageAuthActivity extends AppCompatActivity {
 //
 //        obj = pyObj.callAttr("main", "2", "2");
 //        Log.d("TAG", "onCreate: obj" + obj.toString());
+    }
+
+    private void updateUiAccordingly(int uiCase) {
+
+        String step, title, desc, btnTxt;
+
+        if (uiCase == 1) {
+            step = "1/2";
+            title = getString(R.string.sign1Title);
+            desc = getString(R.string.sign1Desc);
+            btnTxt = "Next";
+        } else if (uiCase == 2) {
+            myDrawView.clear();
+            step = "2/2";
+            title = getString(R.string.sign2Title);
+            desc = getString(R.string.sign2Desc);
+            btnTxt = "Save Signature";
+        } else {
+            step = "";
+            title = getString(R.string.loginTitle);
+            desc = getString(R.string.loginDesc);
+            btnTxt = "Verify";
+        }
+
+        binding.tvStep.setText(step);
+        binding.tvHead.setText(title);
+        binding.tvDesc.setText(desc);
+        binding.btnVerify.setText(btnTxt);
+
+    }
+
+    private void updateSignature1(File signature) {
+        signature1 = signature;
+    }
+
+    private void updateSignature2(File signature) {
+        signature2 = signature;
+    }
+
+    private void checkPythonModule(File signatureFile1, File signatureFile2) {
+
+        if (!Python.isStarted())
+            Python.start(new AndroidPlatform(this));
+
+        Python py = Python.getInstance();
+        PyObject pyObj = py.getModule("script");
+        PyObject obj = null;
+//        String myPath = contentUri.getPath();
+        obj = pyObj.callAttr("main", signatureFile1, signatureFile2);
+        Log.d("TAG", "onCreate: obj" + obj.toString());
+        Toast.makeText(this, "Similarity Score: " + obj.toString(), Toast.LENGTH_SHORT).show();
     }
 
 
@@ -228,18 +333,57 @@ public class ImageAuthActivity extends AppCompatActivity {
         contentUri = Uri.fromFile(photo);
         mediaScanIntent.setData(contentUri);
         ImageAuthActivity.this.sendBroadcast(mediaScanIntent);
-        Log.d("TAG", "scanMediaFile: URI: "+contentUri);
+        Log.d("TAG", "scanMediaFile: URI: " + contentUri);
 
-        if (!Python.isStarted())
-            Python.start(new AndroidPlatform(this));
+//        if (!Python.isStarted())
+//            Python.start(new AndroidPlatform(this));
 
-        Python py = Python.getInstance();
-        PyObject pyObj = py.getModule("script");
-        PyObject obj = null;
-        String myPath = contentUri.getPath();
-        obj = pyObj.callAttr("main", myPath, myPath);
-        Log.d("TAG", "onCreate: obj" + obj.toString());
+//        Python py = Python.getInstance();
+//        PyObject pyObj = py.getModule("script");
+//        PyObject obj = null;
+//        String myPath = contentUri.getPath();
+//        obj = pyObj.callAttr("main", myPath, myPath);
+//        Log.d("TAG", "onCreate: obj" + obj.toString());
     }
+
+//    private void compareBitmap() {
+//        // Convert the bitmaps to grayscale images
+//        Bitmap signature1 = getSignatureBitmap1();
+//        Bitmap signature2 = getSignatureBitmap2();
+//        Mat matSignature1 = new Mat(signature1.getHeight(), signature1.getWidth(), CvType.CV_8UC1);
+//        Mat matSignature2 = new Mat(signature2.getHeight(), signature2.getWidth(), CvType.CV_8UC1);
+//        Utils.bitmapToMat(signature1, matSignature1);
+//        Utils.bitmapToMat(signature2, matSignature2);
+//        Imgproc.cvtColor(matSignature1, matSignature1, Imgproc.COLOR_BGR2GRAY);
+//        Imgproc.cvtColor(matSignature2, matSignature2, Imgproc.COLOR_BGR2GRAY);
+//
+//        // Resize the images
+//        Size size = new Size(200, 100);
+//        Imgproc.resize(matSignature1, matSignature1, size);
+//        Imgproc.resize(matSignature2, matSignature2, size);
+//
+//        // Calculate the difference between the images
+//        Mat diff = new Mat();
+//        Core.absdiff(matSignature1, matSignature2, diff);
+//
+//        // Calculate the similarity score
+//        double mse = Core.mean(diff.mul(diff)).val[0];
+//        double ssim = calculateSSIM(matSignature1, matSignature2);
+//        double ncc = calculateNCC(matSignature1, matSignature2);
+//
+//        // Determine the threshold
+//        double threshold = 100;
+//
+//        // Determine if the two signatures are similar
+//        if (mse < threshold && ssim > threshold && ncc > threshold) {
+//            // The signatures are similar
+//            Log.d(TAG, "compareBitmap: similar"+threshold);
+//        } else {
+//            // The signatures are not similar
+//            Log.d(TAG, "compareBitmap: not similar"+threshold);
+//
+//        }
+//    }
 
     public void verifyStoragePermissions(Activity activity) {
         // Check if we have write permission

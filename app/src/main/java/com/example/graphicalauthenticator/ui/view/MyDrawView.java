@@ -6,8 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
+
+import com.example.graphicalauthenticator.ui.auth.EmailRegistrationActivity;
+import com.google.api.LogDescriptor;
 
 public class MyDrawView extends View {
 
@@ -96,6 +101,8 @@ public class MyDrawView extends View {
    }
 
    public void clear(){
+//      Toast.makeText(getContext(), "Cleared", Toast.LENGTH_SHORT).show();
+//      Log.d("TAG", "clear: Called");
       mBitmap.eraseColor(Color.TRANSPARENT);
       invalidate();
       System.gc();

@@ -7,21 +7,59 @@
         android:layout_height="match_parent"
         tools:context=".ui.auth.ImageAuthActivity">
 
-<!--        <ImageView-->
-<!--            android:id="@+id/imageView"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            android:background="@color/black"-->
-<!--            android:src="@color/black"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toTopOf="parent" />-->
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imageView"-->
+        <!--            android:layout_width="100dp"-->
+        <!--            android:layout_height="100dp"-->
+        <!--            android:background="@color/black"-->
+        <!--            android:src="@color/black"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toTopOf="parent" />-->
 
-<!--        <ImageView-->
-<!--            android:id="@+id/imageView2"-->
-<!--            android:layout_width="100dp"-->
-<!--            android:layout_height="100dp"-->
-<!--            app:layout_constraintStart_toStartOf="parent"-->
-<!--            app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+        <!--        <ImageView-->
+        <!--            android:id="@+id/imageView2"-->
+        <!--            android:layout_width="100dp"-->
+        <!--            android:layout_height="100dp"-->
+        <!--            app:layout_constraintStart_toStartOf="parent"-->
+        <!--            app:layout_constraintTop_toBottomOf="@+id/imageView" />-->
+
+        <TextView
+            android:id="@+id/tvStep"
+            style="@style/MaterialAlertDialog.Material3.Body.Text"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:text="1/2"
+            android:textColor="@color/purple_200"
+            android:textSize="25sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvHead"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            app:layout_constraintTop_toBottomOf="@id/tvStep"
+            app:layout_constraintStart_toStartOf="@id/tvStep"
+            android:text="@string/sign1Title"
+            android:textColor="@color/black"
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:alpha="0.3"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="Draw your signature using your finger in the \nspace provided below to authenticate \nyour login. "
+            app:layout_constraintStart_toStartOf="@id/tvStep"
+            app:layout_constraintTop_toBottomOf="@id/tvHead"
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -31,7 +69,7 @@
             app:layout_constraintBottom_toTopOf="@+id/btnVerify"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toBottomOf="@id/tvDesc">
 
             <!--            <include android:id="@+id/included" layout="@layout/view_display" />-->
             <com.example.graphicalauthenticator.ui.view.Display
@@ -41,34 +79,37 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+
         <ImageButton
             android:id="@+id/btnClearScreen"
             android:layout_width="40dp"
             android:layout_height="40dp"
-            android:layout_margin="20dp"
+            android:layout_marginStart="20dp"
             android:background="@drawable/ic_baseline_refresh_24"
-            android:backgroundTint="@color/black"
+            android:backgroundTint="@color/purple_200"
             android:contentDescription="@string/todo"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/btnVerify"
+/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnVerify"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="10dp"
+            android:layout_marginEnd="20dp"
             android:layout_marginBottom="20dp"
             android:insetTop="0dp"
+            android:layout_marginStart="10dp"
             android:insetBottom="0dp"
             android:minHeight="40dp"
-            android:text="@string/verify"
+            android:text="@string/next"
             android:textAllCaps="false"
             android:textSize="16sp"
             android:textStyle="normal"
             app:cornerRadius="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toEndOf="@+id/btnClearScreen" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
