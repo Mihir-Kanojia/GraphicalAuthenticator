@@ -6,84 +6,85 @@ import com.google.firebase.firestore.ServerTimestamp;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public
 class User {
 
-   @DocumentId
-   private String id;
+    @DocumentId
+    private String id;
 
-   @SerializedName("name")
-   private String name;
+    @SerializedName("name")
+    private String name;
 
-   @SerializedName("pathURI")
-   private String pathURI;
+    @SerializedName("pathURI")
+    private List<Integer> imageList;
 
-   @ServerTimestamp
-   public Date currDate;
+    @ServerTimestamp
+    public Date currDate;
 
-   @ServerTimestamp
-   public Date createDate;
+    @ServerTimestamp
+    public Date createDate;
 
-   public User(){
+    public User() {
 
-   }
+    }
 
-   public String getId() {
-      return id;
-   }
+    public String getId() {
+        return id;
+    }
 
-   public void setId(String id) {
-      this.id = id;
-   }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-   public String getName() {
-      return name;
-   }
+    public String getName() {
+        return name;
+    }
 
-   public void setName(String name) {
-      this.name = name;
-   }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-   public String getPathURI() {
-      return pathURI;
-   }
+    public List<Integer> getPathURI() {
+        return imageList;
+    }
 
-   public void setPathURI(String pathURI) {
-      this.pathURI = pathURI;
-   }
+    public void setPathURI(List<Integer> imageList) {
+        this.imageList = imageList;
+    }
 
-   public Date getCurrDate() {
-      return currDate;
-   }
+    public Date getCurrDate() {
+        return currDate;
+    }
 
-   public void setCurrDate(Date currDate) {
-      this.currDate = currDate;
-   }
+    public void setCurrDate(Date currDate) {
+        this.currDate = currDate;
+    }
 
-   public Date getCreateDate() {
-      return createDate;
-   }
+    public Date getCreateDate() {
+        return createDate;
+    }
 
-   public void setCreateDate(Date createDate) {
-      this.createDate = createDate;
-   }
+    public void setCreateDate(Date createDate) {
+        this.createDate = createDate;
+    }
 
-   public User(String name, String pathURI, Date currDate) {
-      this.name = name;
-      this.pathURI = pathURI;
-      this.currDate = currDate;
-      this.createDate = new Date();
+    public User(String name, List<Integer> imageList, Date currDate) {
+        this.name = name;
+        this.imageList = imageList;
+        this.currDate = currDate;
+        this.createDate = new Date();
 
-   }
+    }
 
-   public Map<String, Object> toMap() {
-      Map<String, Object> map = new HashMap<>();
-      map.put("name", name);
-      map.put("pathURI", pathURI);
-      map.put("currDate", currDate);
-      map.put("createDate", createDate);
-      return map;
-   }
+    public Map<String, Object> toMap() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("name", name);
+        map.put("imageList", imageList);
+        map.put("currDate", currDate);
+        map.put("createDate", createDate);
+        return map;
+    }
 }

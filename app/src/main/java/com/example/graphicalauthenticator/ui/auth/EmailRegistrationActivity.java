@@ -3,6 +3,7 @@ package com.example.graphicalauthenticator.ui.auth;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
@@ -34,8 +35,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Transaction;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -56,6 +59,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_email_registration);
         setContentView(binding.getRoot());
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         FirebaseApp.initializeApp(this);
         mAuth = FirebaseAuth.getInstance();
@@ -109,24 +113,24 @@ public class EmailRegistrationActivity extends AppCompatActivity {
                     private void updateUI(FirebaseUser user) {
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();
-                        CollectionReference usersRef = db.collection("users");
+//                        CollectionReference usersRef = db.collection("users");
                         String userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
                         String userId2 = user.getUid();
 
-                        Log.d("TAG", "updateUI getCurrUser userId: " + userId);
-                        Log.d("TAG", "updateUI getCurrUser userId2: " + userId2);
-                        Log.d("TAG", "updateUI getCurrUser UserAuthID: " + UserAuthID);
+//                        Log.d("TAG", "updateUI getCurrUser userId: " + userId);
+//                        Log.d("TAG", "updateUI getCurrUser userId2: " + userId2);
+//                        Log.d("TAG", "updateUI getCurrUser UserAuthID: " + UserAuthID);
 
-
-                        User userObj = new User(userName, "", new Date());
+                        List<Integer> list = new ArrayList<>();
+                        User userObj = new User(userName, list, new Date());
                         Map<String, Object> userMap = userObj.toMap();
 
-                        usersRef.document(userId2).set(userMap)
+                        repository.getUserProfileCollection().document(userId2).set(userMap)
                                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                                     @Override
                                     public void onSuccess(Void aVoid) {
                                         Log.d("TAG", "User added with ID: " + userId);
-                                        Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
+//                                        Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
 //                                        new ActivitySwitchManager(EmailRegistrationActivity.this, ImageAuthActivity.class).openActivity();
                                         Intent intent = new Intent(EmailRegistrationActivity.this, ImageAuthActivity.class);
                                         intent.putExtra(CREATE_NEW_SIGNATURE, true);

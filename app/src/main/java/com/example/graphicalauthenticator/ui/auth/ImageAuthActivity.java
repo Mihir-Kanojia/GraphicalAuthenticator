@@ -1,5 +1,6 @@
 package com.example.graphicalauthenticator.ui.auth;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -11,6 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -27,23 +29,40 @@ import android.widget.Toast;
 import com.chaquo.python.PyObject;
 import com.chaquo.python.Python;
 import com.chaquo.python.android.AndroidPlatform;
+import com.example.graphicalauthenticator.MainActivity;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityImageAuthBinding;
+import com.example.graphicalauthenticator.repository.FirestoreRepository;
 import com.example.graphicalauthenticator.ui.view.Display;
 import com.example.graphicalauthenticator.ui.view.MyDrawView;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.installations.Utils;
+import com.google.firebase.storage.FileDownloadTask;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 //import com.example.graphicalauthenticator.ui.view.PaintView;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
+import static com.example.graphicalauthenticator.Constants.AUTH_SIGNATURE;
 import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
+import static com.example.graphicalauthenticator.Constants.UserAuthID;
 
 public class ImageAuthActivity extends AppCompatActivity {
 
+    private static final int SIM_THRESHOLD = 70;
     private ActivityImageAuthBinding binding;
 
     public static Path path = new Path();
@@ -57,10 +76,13 @@ public class ImageAuthActivity extends AppCompatActivity {
     private static final String[] PERMISSIONS_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE};
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
     private Boolean isNewSignature = false;
+    private Boolean isAuthSignature = false;
     private Boolean firstSignature = true;
     private Uri contentUri;
-    private File signature1;
-    private File signature2;
+    private final FirestoreRepository repository = new FirestoreRepository();
+    private FirebaseStorage storage;
+    private StorageReference storageRef;
+    private StorageReference imagesRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,13 +92,18 @@ public class ImageAuthActivity extends AppCompatActivity {
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
         setContentView(binding.getRoot());
+        storage = FirebaseStorage.getInstance();
+        storageRef = storage.getReference();
+        imagesRef = storageRef.child("signatures/" + UserAuthID + ".jpg");
+
 
         Intent intent = getIntent();
         isNewSignature = intent.getBooleanExtra(CREATE_NEW_SIGNATURE, false);
-
-        Toast.makeText(this, "" + isNewSignature, Toast.LENGTH_SHORT).show();
+        isAuthSignature = intent.getBooleanExtra(AUTH_SIGNATURE, false);
+        Toast.makeText(this, "isNewSignature: " + isNewSignature, Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "isAuthSignature: " + isAuthSignature, Toast.LENGTH_SHORT).show();
         if (isNewSignature) {
-            binding.btnVerify.setText("Next");
+            binding.btnVerify.setText(getString(R.string.next));
             firstSignature = true;
             updateUiAccordingly(1);
         } else {
@@ -161,7 +188,31 @@ public class ImageAuthActivity extends AppCompatActivity {
                         try {
 
                             FileOutputStream outputStream1, outputStream2;
-                            if (isNewSignature) {
+
+                            if (isAuthSignature) {
+                                outputStream2 = new FileOutputStream(signatureFile2);
+                                signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
+//                                checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
+
+                                File localFile = File.createTempFile("images", "jpg");
+                                imagesRef.getFile(localFile)
+                                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                            @Override
+                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                // Local file created successfully, do something with it
+                                                checkPythonModule(signatureFile2, localFile, signatureBitmap);
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception exception) {
+                                                // Handle any errors
+                                                Toast.makeText(ImageAuthActivity.this, "Unexpected problem occurred: " + exception, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+
+                            } else if (isNewSignature) {
                                 if (firstSignature) {
                                     outputStream1 = new FileOutputStream(signatureFile1);
                                     signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream1);
@@ -170,11 +221,15 @@ public class ImageAuthActivity extends AppCompatActivity {
                                 } else {
                                     outputStream2 = new FileOutputStream(signatureFile2);
                                     signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
-                                    checkPythonModule(signatureFile1, signatureFile2);
+                                    checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
                                 }
                             }
+
+
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
 
 
@@ -220,14 +275,15 @@ public class ImageAuthActivity extends AppCompatActivity {
     private void updateUiAccordingly(int uiCase) {
 
         String step, title, desc, btnTxt;
+        myDrawView.clear();
 
         if (uiCase == 1) {
             step = "1/2";
             title = getString(R.string.sign1Title);
             desc = getString(R.string.sign1Desc);
             btnTxt = "Next";
+
         } else if (uiCase == 2) {
-            myDrawView.clear();
             step = "2/2";
             title = getString(R.string.sign2Title);
             desc = getString(R.string.sign2Desc);
@@ -246,26 +302,98 @@ public class ImageAuthActivity extends AppCompatActivity {
 
     }
 
-    private void updateSignature1(File signature) {
-        signature1 = signature;
-    }
+//    private void updateSignature1(File signature) {
+//        signature1 = signature;
+//    }
+//
+//    private void updateSignature2(File signature) {
+//        signature2 = signature;
+//    }
 
-    private void updateSignature2(File signature) {
-        signature2 = signature;
-    }
-
-    private void checkPythonModule(File signatureFile1, File signatureFile2) {
+    private void checkPythonModule(File signatureFile1, File signatureFile2, Bitmap signatureBitmap) {
 
         if (!Python.isStarted())
             Python.start(new AndroidPlatform(this));
 
         Python py = Python.getInstance();
-        PyObject pyObj = py.getModule("script");
+        PyObject pyObj = py.getModule("signature");
         PyObject obj = null;
 //        String myPath = contentUri.getPath();
-        obj = pyObj.callAttr("main", signatureFile1, signatureFile2);
+        obj = pyObj.callAttr("main", signatureFile1.getAbsolutePath(), signatureFile2.getAbsolutePath());
         Log.d("TAG", "onCreate: obj" + obj.toString());
-        Toast.makeText(this, "Similarity Score: " + obj.toString(), Toast.LENGTH_SHORT).show();
+//        Toast.makeText(this, "Similarity Score: " + obj.toString(), Toast.LENGTH_SHORT).show();
+        float simScore = Float.parseFloat(obj.toString());
+
+        if (isNewSignature) {
+            if (simScore >= SIM_THRESHOLD) {
+                uploadSignatureOnFirebase(signatureBitmap);
+            } else {
+                Toast.makeText(this, "Signature not matched.\nTry re-drawing signature.", Toast.LENGTH_SHORT).show();
+                isNewSignature = true;
+                firstSignature = true;
+                updateUiAccordingly(1);
+                myDrawView.clear();
+            }
+        } else if (isAuthSignature) {
+            if (simScore >= SIM_THRESHOLD) {
+                Toast.makeText(this, "Authentication successful. \nWelcome back!", Toast.LENGTH_SHORT).show();
+                // Create a Bitmap object from the local file
+                Bitmap bitmap1 = BitmapFactory.decodeFile(signatureFile1.getAbsolutePath());
+                Bitmap bitmap2 = BitmapFactory.decodeFile(signatureFile2.getAbsolutePath());
+
+                binding.iv1.setImageBitmap(bitmap1);
+                binding.iv2.setImageBitmap(bitmap2);
+
+//                startActivity(new Intent(ImageAuthActivity.this, MainActivity.class));
+            } else {
+                Toast.makeText(this, "Signature doesn't match. Please try again.", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    private void uploadSignatureOnFirebase(Bitmap signatureBitmap) {
+
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        signatureBitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+
+        UploadTask uploadTask = imagesRef.putBytes(data);
+        uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                // Image uploaded successfully
+                Toast.makeText(ImageAuthActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ImageAuthActivity.this, MainActivity.class);
+                startActivity(intent);
+
+
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                // Image upload failed
+                Toast.makeText(ImageAuthActivity.this, "Problem occurred", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+
+
+    }
+
+    private List<Integer> convertBitmapToList(Bitmap signatureBitmap) {
+
+        int width = signatureBitmap.getWidth();
+        int height = signatureBitmap.getHeight();
+        int[] pixels = new int[width * height];
+        signatureBitmap.getPixels(pixels, 0, width, 0, 0, width, height);
+
+        List<Integer> pixelList = new ArrayList<Integer>();
+        for (int pixel : pixels) {
+            pixelList.add(pixel);
+        }
+
+        return pixelList;
     }
 
 

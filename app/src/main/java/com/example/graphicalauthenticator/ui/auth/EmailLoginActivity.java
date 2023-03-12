@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseUser;
 
 import java.util.Objects;
 
+import static com.example.graphicalauthenticator.Constants.AUTH_SIGNATURE;
 import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
 
 public class EmailLoginActivity extends AppCompatActivity {
@@ -42,9 +43,6 @@ public class EmailLoginActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
-        String email = Objects.requireNonNull(binding.etEmail.getText()).toString();
-        String password = Objects.requireNonNull(binding.etPassword.getText()).toString();
 
         binding.btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -85,8 +83,14 @@ public class EmailLoginActivity extends AppCompatActivity {
 //                                    updateUI(null);
                         }
                     }
+
                     private void updateUI(FirebaseUser user) {
-                        new ActivitySwitchManager(EmailLoginActivity.this, MainActivity.class).openActivity();
+
+                        Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
+                        intent.putExtra(AUTH_SIGNATURE, true);
+                        startActivity(intent);
+                        finish();
+
                     }
 
                 });
@@ -103,7 +107,7 @@ public class EmailLoginActivity extends AppCompatActivity {
         if (currentUser != null) {
 //            new ActivitySwitchManager(this, MainActivity.class).openActivity();
             Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
-            intent.putExtra(CREATE_NEW_SIGNATURE, true);
+            intent.putExtra(AUTH_SIGNATURE, true);
             startActivity(intent);
         }
     }
