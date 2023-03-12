@@ -135,6 +135,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
                                         Intent intent = new Intent(EmailRegistrationActivity.this, ImageAuthActivity.class);
                                         intent.putExtra(CREATE_NEW_SIGNATURE, true);
                                         startActivity(intent);
+                                        finish();
 
                                     }
                                 })

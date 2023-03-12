@@ -33,17 +33,29 @@ public class EmailLoginActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     boolean doubleBackToExitPressedOnce = false;
     private ActivityEmailLoginBinding binding;
+    private boolean isAlreadyLoggedIn = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mAuth = FirebaseAuth.getInstance();
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
+//            new ActivitySwitchManager(this, MainActivity.class).openActivity();
+//            Toast.makeText(this, "Already login", Toast.LENGTH_SHORT).show();
+            Log.d("TAG", "onCreate: I am called");
+            Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
+            intent.putExtra(AUTH_SIGNATURE, true);
+            startActivity(intent);
+            finish();
+        }
+
         binding = DataBindingUtil.setContentView(this, R.layout.activity_email_login);
         setContentView(binding.getRoot());
 
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-
+        Log.d("TAG", "onCreate: EmailLoginActivity");
         binding.btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -86,6 +98,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
                     private void updateUI(FirebaseUser user) {
 
+                        Toast.makeText(EmailLoginActivity.this, "New login", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
                         intent.putExtra(AUTH_SIGNATURE, true);
                         startActivity(intent);
@@ -103,13 +116,15 @@ public class EmailLoginActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
-//            new ActivitySwitchManager(this, MainActivity.class).openActivity();
-            Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
-            intent.putExtra(AUTH_SIGNATURE, true);
-            startActivity(intent);
-        }
+//        FirebaseUser currentUser = mAuth.getCurrentUser();
+//        if (currentUser != null) {
+////            new ActivitySwitchManager(this, MainActivity.class).openActivity();
+//            Toast.makeText(this, "Already login", Toast.LENGTH_SHORT).show();
+//            Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
+//            intent.putExtra(AUTH_SIGNATURE, true);
+//            startActivity(intent);
+//        }
+
     }
 
     @Override

@@ -1,84 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity">
+<layout>
 
-    <!-- Top bar with app logo and logout button -->
-    <com.google.android.material.appbar.MaterialToolbar
-        android:id="@+id/top_bar"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="?attr/actionBarSize"
-        android:background="@color/purple_500"
-        app:layout_constraintTop_toTopOf="parent"
-        app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
-        app:titleTextColor="@color/white">
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
 
         <!-- App logo -->
         <ImageView
             android:id="@+id/app_logo"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:src="@drawable/authentication"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="100dp"
             android:contentDescription="Graphical AUTH"
-            android:padding="8dp"/>
+            android:padding="8dp"
+            android:src="@drawable/authentication"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Logout button -->
-        <Button
-            android:id="@+id/logout_button"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="Logout"
-            android:textAllCaps="false"
-            android:textSize="16sp"
-            android:textColor="@color/white"
-            android:background="@null"
-            android:padding="8dp"/>
 
-    </com.google.android.material.appbar.MaterialToolbar>
-
-    <!-- User info card -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/user_info_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="16dp"
-        app:cardElevation="4dp"
-        app:layout_constraintTop_toBottomOf="@id/top_bar"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
-
-        <LinearLayout
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/user_info_card"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/app_logo">
 
-            <!-- User name -->
-            <TextView
-                android:id="@+id/user_name"
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="UserName"
-                android:textSize="24sp"
-                android:textColor="@color/black"/>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <!-- User email -->
-            <TextView
-                android:id="@+id/user_email"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="tesetuser@test.test"
-                android:textSize="18sp"
-                android:textColor="@color/black"/>
+                <!-- User name -->
+                <TextView
+                    android:id="@+id/user_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="UserName"
+                    android:textColor="@color/black"
+                    android:textSize="24sp" />
 
-        </LinearLayout>
+                <!-- User email -->
+                <TextView
+                    android:id="@+id/user_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="tesetuser@test.test"
+                    android:textColor="@color/black"
+                    android:textSize="18sp" />
 
-    </com.google.android.material.card.MaterialCardView>
+            </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Logout"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/user_info_card" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
