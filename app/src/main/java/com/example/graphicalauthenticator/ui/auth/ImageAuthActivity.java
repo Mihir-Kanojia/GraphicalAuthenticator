@@ -62,7 +62,7 @@ import static com.example.graphicalauthenticator.Constants.UserAuthID;
 
 public class ImageAuthActivity extends AppCompatActivity {
 
-    private static final int SIM_THRESHOLD = 60;
+    private static final int SIM_THRESHOLD = 25;
     private ActivityImageAuthBinding binding;
 
     public static Path path = new Path();
@@ -247,11 +247,11 @@ public class ImageAuthActivity extends AppCompatActivity {
                         Log.d("TAG", "run: TESTTTT");
 //                        Toast.makeText(ImageAuthActivity.this, "Test", Toast.LENGTH_SHORT).show();
 //                        addJpgSignatureToGallery(signatureBitmap);
-//                        if (addJpgSignatureToGallery(signatureBitmap)) {
+                        if (addJpgSignatureToGallery(signatureBitmap)) {
 //                            Toast.makeText(ImageAuthActivity.this, "Signature saved into the Gallery", Toast.LENGTH_SHORT).show();
-//                        } else {
-//                            Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
-//                        }
+                        } else {
+                            Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
+                        }
                     }
                 });
 
@@ -318,11 +318,20 @@ public class ImageAuthActivity extends AppCompatActivity {
 
     private void checkPythonModule(File signatureFile1, File signatureFile2, Bitmap signatureBitmap) {
         Log.d("TAG", "checkPythonModule: INSIDE MODULE");
+
+
+//        Bitmap bitmap1 = BitmapFactory.decodeFile(signatureFile1.getAbsolutePath());
+//        Bitmap bitmap2 = BitmapFactory.decodeFile(signatureFile2.getAbsolutePath());
+//
+//        binding.iv1.setImageBitmap(bitmap1);
+//        binding.iv2.setImageBitmap(bitmap2);
+
+
         if (!Python.isStarted())
             Python.start(new AndroidPlatform(this));
 
         Python py = Python.getInstance();
-        PyObject pyObj = py.getModule("script2");
+        PyObject pyObj = py.getModule("script3");
         PyObject obj = null;
 //        String myPath = contentUri.getPath();
 //        obj = pyObj.callAttr("main", signatureFile1, signatureFile2);
@@ -332,7 +341,7 @@ public class ImageAuthActivity extends AppCompatActivity {
         float simScore = Float.parseFloat(obj.toString());
 
         if (isNewSignature) {
-            if (simScore >= SIM_THRESHOLD) {
+            if (simScore > SIM_THRESHOLD) {
                 uploadSignatureOnFirebase(signatureBitmap);
             } else {
                 Toast.makeText(this, "Signature not matched.\nTry re-drawing signature.", Toast.LENGTH_SHORT).show();
@@ -348,8 +357,8 @@ public class ImageAuthActivity extends AppCompatActivity {
                 Bitmap bitmap1 = BitmapFactory.decodeFile(signatureFile1.getAbsolutePath());
                 Bitmap bitmap2 = BitmapFactory.decodeFile(signatureFile2.getAbsolutePath());
 
-//                binding.iv1.setImageBitmap(bitmap1);
-//                binding.iv2.setImageBitmap(bitmap2);
+                binding.iv1.setImageBitmap(bitmap1);
+                binding.iv2.setImageBitmap(bitmap2);
 
                 startActivity(new Intent(ImageAuthActivity.this, MainActivity.class));
                 finish();
