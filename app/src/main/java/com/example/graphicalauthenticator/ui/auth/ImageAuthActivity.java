@@ -33,6 +33,7 @@ import com.example.graphicalauthenticator.MainActivity;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityImageAuthBinding;
 import com.example.graphicalauthenticator.repository.FirestoreRepository;
+import com.example.graphicalauthenticator.ui.filemanager.FileDashbaordActivity;
 import com.example.graphicalauthenticator.ui.view.Display;
 import com.example.graphicalauthenticator.ui.view.MyDrawView;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -360,7 +361,8 @@ public class ImageAuthActivity extends AppCompatActivity {
                 binding.iv1.setImageBitmap(bitmap1);
                 binding.iv2.setImageBitmap(bitmap2);
 
-                startActivity(new Intent(ImageAuthActivity.this, MainActivity.class));
+//                startActivity(new Intent(ImageAuthActivity.this, MainActivity.class));
+                startActivity(new Intent(ImageAuthActivity.this, FileDashbaordActivity.class));
                 finish();
             } else {
                 Toast.makeText(this, "Signature doesn't match. Please try again.", Toast.LENGTH_SHORT).show();
@@ -381,8 +383,9 @@ public class ImageAuthActivity extends AppCompatActivity {
             public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
                 // Image uploaded successfully
                 Toast.makeText(ImageAuthActivity.this, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(ImageAuthActivity.this, MainActivity.class);
-                startActivity(intent);
+//                Intent intent = new Intent(ImageAuthActivity.this, MainActivity.class);
+//                startActivity(intent);
+                startActivity(new Intent(ImageAuthActivity.this, FileDashbaordActivity.class));
                 finish();
 
             }

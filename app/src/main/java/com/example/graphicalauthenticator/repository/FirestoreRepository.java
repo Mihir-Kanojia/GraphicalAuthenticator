@@ -23,5 +23,9 @@ public class FirestoreRepository {
         return firestoreDB.collection("USERS").document(UserAuthID);
     }
 
+    public CollectionReference getUserFileCollection(){
+        return getUserProfileDocument().collection("FILES");
+    }
+
 
 }

@@ -18,23 +18,28 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.GraphicalAuthenticator">
         <activity
-            android:name=".ui.dashboard.DashboardActivity"
-            android:exported="false">
+            android:name=".ui.filemanager.FileDashbaordActivity"
+            android:exported="true">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
 
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
         </activity>
         <activity
+            android:name=".ui.dashboard.DashboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.auth.ImageAuthActivity"
-            android:exported="true">
-
-        </activity>
+            android:exported="true"/>
         <activity
             android:name=".ui.auth.EmailRegistrationActivity"
             android:exported="false" />
         <activity
             android:name=".ui.auth.EmailLoginActivity"
-            android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|keyboardHidden"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTask">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

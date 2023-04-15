@@ -1,4 +1,4 @@
-package com.example.graphicalauthenticator.model;
+package com.example.graphicalauthenticator.Modal;
 
 import com.google.firebase.firestore.DocumentId;
 import com.google.gson.annotations.SerializedName;

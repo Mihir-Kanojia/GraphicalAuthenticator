@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    compileSdk 32
+    compileSdk 33
     ndkVersion '21.4.7075529'
 
     defaultConfig {
         applicationId "com.example.graphicalauthenticator"
         minSdk 22
-        targetSdk 32
+        targetSdk 33
         versionCode 1
         versionName "1.2"
         multiDexEnabled true
@@ -37,7 +37,7 @@ android {
         }
 
         python {
-            buildPython "C:/Users/User/AppData/Local/Programs/Python/Python38-32/python.exe"
+            buildPython "C:/Users/Codiyapa/AppData/Local/Programs/Python/Python311/python.exe"
         }
 
     }

@@ -1,7 +1,6 @@
 package com.example.graphicalauthenticator.ui.auth;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
@@ -11,15 +10,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.graphicalauthenticator.Constants;
-import com.example.graphicalauthenticator.MainActivity;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityEmailRegistrationBinding;
-import com.example.graphicalauthenticator.managers.ActivitySwitchManager;
-import com.example.graphicalauthenticator.model.User;
+import com.example.graphicalauthenticator.Modal.User;
 import com.example.graphicalauthenticator.repository.FirestoreRepository;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -29,21 +24,15 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.Transaction;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
 import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
-import static com.example.graphicalauthenticator.Constants.UserAuthID;
 
 public class EmailRegistrationActivity extends AppCompatActivity {
 
@@ -110,6 +99,7 @@ public class EmailRegistrationActivity extends AppCompatActivity {
                         }
                     }
 
+                  //This updates the UI
                     private void updateUI(FirebaseUser user) {
 
                         FirebaseFirestore db = FirebaseFirestore.getInstance();

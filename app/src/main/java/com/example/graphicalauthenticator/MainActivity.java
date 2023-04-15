@@ -2,7 +2,6 @@ package com.example.graphicalauthenticator;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 
 import android.content.Intent;
@@ -12,17 +11,14 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.graphicalauthenticator.databinding.ActivityMainBinding;
-import com.example.graphicalauthenticator.managers.ActivitySwitchManager;
-import com.example.graphicalauthenticator.model.User;
+import com.example.graphicalauthenticator.Modal.User;
 import com.example.graphicalauthenticator.repository.FirestoreRepository;
 import com.example.graphicalauthenticator.ui.auth.EmailLoginActivity;
-import com.example.graphicalauthenticator.ui.auth.ImageAuthActivity;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
 
