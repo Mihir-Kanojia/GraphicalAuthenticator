@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.filemanager.FileDashbaordActivity">
@@ -12,51 +12,73 @@
             android:id="@+id/rvFiles"
             android:layout_width="0dp"
             android:layout_height="0dp"
+            android:layout_marginTop="10dp"
             android:layout_marginEnd="20dp"
             android:clipToPadding="false"
             android:requiresFadingEdge="vertical"
-            app:layout_constraintBottom_toTopOf="@+id/tvDropManager"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvDropManager"
             tools:listitem="@layout/list_files" />
+
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/btnUpload"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:layout_margin="20dp"
+            android:backgroundTint="@color/purple_500"
+            android:text="Add File"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            app:icon="@android:drawable/ic_input_add"
+            app:iconTint="@color/white"
+            app:layout_behavior="com.google.android.material.behavior.HideBottomViewOnScrollBehavior"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintRight_toRightOf="parent" />
 
         <TextView
             android:id="@+id/tvDropManager"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="24dp"
-            android:layout_marginBottom="60dp"
+            android:layout_marginTop="20dp"
             android:text="Drop \nManager"
             android:textColor="@color/text_col"
             android:textSize="34sp"
             android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnUpload"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginStart="24dp"
-            android:layout_marginTop="30dp"
+        <!--        <com.google.android.material.button.MaterialButton-->
+        <!--            android:id="@+id/btnUpload"-->
+        <!--            android:layout_width="0dp"-->
+        <!--            android:layout_height="0dp"-->
+        <!--            android:layout_marginStart="24dp"-->
+        <!--            android:layout_marginTop="30dp"-->
+        <!--            android:layout_marginEnd="24dp"-->
+        <!--            android:text="Upload"-->
+        <!--            android:textAllCaps="false"-->
+        <!--            android:textSize="18sp"-->
+        <!--            app:layout_constraintBottom_toBottomOf="@+id/tvDropManager"-->
+        <!--            app:layout_constraintEnd_toEndOf="parent"-->
+        <!--            app:layout_constraintStart_toEndOf="@+id/tvDropManager"-->
+        <!--            app:layout_constraintTop_toTopOf="@+id/tvDropManager" />-->
+
+        <ImageButton
+            android:id="@+id/btnLogout"
+            android:layout_width="30dp"
+            android:layout_height="40dp"
             android:layout_marginEnd="24dp"
-            android:text="Upload"
-            android:textAllCaps="false"
-            android:textSize="18sp"
+            android:backgroundTint="@color/white"
+            android:contentDescription="@string/todo"
+            android:src="@drawable/baseline_logout_24"
             app:layout_constraintBottom_toBottomOf="@+id/tvDropManager"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/tvDropManager"
-            app:layout_constraintTop_toTopOf="@+id/tvDropManager" />
-
-        <Button
-            android:id="@+id/btnLogout"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:text="logout"
-            app:layout_constraintEnd_toEndOf="@id/btnUpload"
-            app:layout_constraintStart_toStartOf="@id/btnUpload"
-            app:layout_constraintTop_toBottomOf="@id/btnUpload" />
+            app:layout_constraintTop_toTopOf="@+id/tvDropManager"
+            app:tint="@color/text_col" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

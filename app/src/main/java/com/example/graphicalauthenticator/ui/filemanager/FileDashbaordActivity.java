@@ -136,8 +136,6 @@ public class FileDashbaordActivity extends AppCompatActivity {
     } //  onCreate() closed
 
 
-
-
     private void fetchFilesAndUpdateRvAdapter() {
 
         repository.getUserFileCollection().orderBy("uploadDateTime", Query.Direction.DESCENDING)
@@ -163,8 +161,18 @@ public class FileDashbaordActivity extends AppCompatActivity {
                                     FileModal modal = new FileModal(name, size, type, url);
                                     modal.setUploadDateTime(upDate);
                                     fileModalList.add(modal);
-
+                                    FileModal model = new FileModal("Filename", 24, "pdf", "fileurll.com");
+                                    fileModalList.add(model);
+                                    fileModalList.add(model);
+                                    fileModalList.add(model);
+                                    model = new FileModal("Filename", 24, "pdaf", "fileurll.com");
+                                    fileModalList.add(model);
+                                    fileModalList.add(model);
+                                    fileModalList.add(model);
+                                    fileModalList.add(model);
                                 }
+
+
                                 // Do something with userList here, such as display it in a RecyclerView
                                 binding.rvFiles.setAdapter(filesAdapter);
 
