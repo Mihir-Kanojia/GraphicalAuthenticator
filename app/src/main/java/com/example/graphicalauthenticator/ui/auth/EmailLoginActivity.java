@@ -98,7 +98,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
                     private void updateUI(FirebaseUser user) {
 
-                        Toast.makeText(EmailLoginActivity.this, "New login", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(EmailLoginActivity.this, "New login", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
                         intent.putExtra(AUTH_SIGNATURE, true);
                         startActivity(intent);

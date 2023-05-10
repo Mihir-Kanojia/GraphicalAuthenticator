@@ -248,11 +248,11 @@ public class ImageAuthActivity extends AppCompatActivity {
                         Log.d("TAG", "run: TESTTTT");
 //                        Toast.makeText(ImageAuthActivity.this, "Test", Toast.LENGTH_SHORT).show();
 //                        addJpgSignatureToGallery(signatureBitmap);
-                        if (addJpgSignatureToGallery(signatureBitmap)) {
-//                            Toast.makeText(ImageAuthActivity.this, "Signature saved into the Gallery", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
-                        }
+//                        if (addJpgSignatureToGallery(signatureBitmap)) {
+////                            Toast.makeText(ImageAuthActivity.this, "Signature saved into the Gallery", Toast.LENGTH_SHORT).show();
+//                        } else {
+//                            Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
+//                        }
                     }
                 });
 

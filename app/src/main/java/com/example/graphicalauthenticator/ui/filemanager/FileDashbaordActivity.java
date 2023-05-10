@@ -90,11 +90,23 @@ public class FileDashbaordActivity extends AppCompatActivity {
         binding.btnLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseAuth mAuth = FirebaseAuth.getInstance();
-                mAuth.signOut();
-                Intent intent = new Intent(FileDashbaordActivity.this, EmailLoginActivity.class);
-                startActivity(intent);
-                finish();
+                AlertDialog.Builder dialog = new AlertDialog.Builder(FileDashbaordActivity.this);
+                dialog.setTitle("Logout Confirmation")
+                        .setMessage("Are you sure you want to log out? This will end your current session and you will need to log in again to access your account.\n")
+                        .setCancelable(true)
+                        .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                logOutUserFromCurrentSession();
+                            }
+                        })
+                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                dialog.create().show();
             }
         });
 
@@ -134,6 +146,14 @@ public class FileDashbaordActivity extends AppCompatActivity {
 
         });
     } //  onCreate() closed
+
+    private void logOutUserFromCurrentSession() {
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+        mAuth.signOut();
+        Intent intent = new Intent(FileDashbaordActivity.this, EmailLoginActivity.class);
+        startActivity(intent);
+        finish();
+    }
 
 
     private void fetchFilesAndUpdateRvAdapter() {

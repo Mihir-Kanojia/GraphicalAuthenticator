@@ -60,15 +60,12 @@ public class EmailRegistrationActivity extends AppCompatActivity {
             }
         });
 
-
         binding.tvLoginHere.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Toast.makeText(EmailRegistrationActivity.this, "Here", Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
 
     private void verifyAndCreateUser() {
