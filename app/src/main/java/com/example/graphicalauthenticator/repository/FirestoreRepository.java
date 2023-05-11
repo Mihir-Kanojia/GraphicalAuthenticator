@@ -1,10 +1,13 @@
 package com.example.graphicalauthenticator.repository;
 
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import static com.example.graphicalauthenticator.Constants.UserAuthID;
+//import static com.example.graphicalauthenticator.Constants.UserAuthID;
+
+import java.util.Objects;
 
 public class FirestoreRepository {
 
@@ -19,8 +22,7 @@ public class FirestoreRepository {
     }
 
     public DocumentReference getUserProfileDocument(){
-
-        return firestoreDB.collection("USERS").document(UserAuthID);
+        return firestoreDB.collection("USERS").document(Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
     }
 
     public CollectionReference getUserFileCollection(){

@@ -26,6 +26,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.util.Size;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.chaquo.python.PyObject;
@@ -40,6 +41,7 @@ import com.example.graphicalauthenticator.ui.view.Display;
 import com.example.graphicalauthenticator.ui.view.MyDrawView;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.installations.Utils;
 import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
@@ -59,10 +61,11 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static com.example.graphicalauthenticator.Constants.AUTH_SIGNATURE;
 import static com.example.graphicalauthenticator.Constants.CREATE_NEW_SIGNATURE;
-import static com.example.graphicalauthenticator.Constants.UserAuthID;
+//import static com.example.graphicalauthenticator.Constants.UserAuthID;
 
 public class ImageAuthActivity extends AppCompatActivity {
 
@@ -97,12 +100,12 @@ public class ImageAuthActivity extends AppCompatActivity {
             rootedDeviceDetectedExitApp();
         } else {
 
-
             binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
             setContentView(binding.getRoot());
             storage = FirebaseStorage.getInstance();
             storageRef = storage.getReference();
-            imagesRef = storageRef.child("signatures/" + UserAuthID + ".jpg");
+            imagesRef = storageRef.child("signatures/" + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid() + ".jpg");
+            Log.d("TAG", "onCreate UID: ImageAuthActivity: " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
 
 
             Intent intent = getIntent();
@@ -120,7 +123,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 
 //        verifyStoragePermissions(this);
 
-//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
+//            getWindow().setFlags(WindowManager.LayoutParams.FLAG_SECURE, WindowManager.LayoutParams.FLAG_SECURE);
 
 //        View view = binding.included;
 //        paintView = view.findViewById(R.id.paintView);

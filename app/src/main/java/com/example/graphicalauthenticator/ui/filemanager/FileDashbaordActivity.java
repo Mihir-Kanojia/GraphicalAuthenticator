@@ -49,6 +49,7 @@ import com.scottyab.rootbeer.RootBeer;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class FileDashbaordActivity extends AppCompatActivity {
 
@@ -68,7 +69,7 @@ public class FileDashbaordActivity extends AppCompatActivity {
         RootBeer rootBeer = new RootBeer(this);
         if (rootBeer.isRooted()) {
             rootedDeviceDetectedExitApp();
-        } else if (currentUser != null) {
+        } else if (currentUser == null) {
             // User is already authenticated, redirect to the main activity
             nonAuthenticatedUserFoundExitApp();
 
@@ -84,6 +85,7 @@ public class FileDashbaordActivity extends AppCompatActivity {
 
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             fetchFilesAndUpdateRvAdapter();
+            Log.d("TAG", "onCreate UID: FileDashboardActivity: " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
 
 
 // Define an ActivityResultLauncher to launch the file picker and receive the result
@@ -204,6 +206,7 @@ public class FileDashbaordActivity extends AppCompatActivity {
 
 
     private void fetchFilesAndUpdateRvAdapter() {
+        Log.d("TAG", "onCreate UID: FileDashboardActivity: " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
 
         repository.getUserFileCollection().orderBy("uploadDateTime", Query.Direction.DESCENDING)
                 .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
@@ -216,6 +219,7 @@ public class FileDashbaordActivity extends AppCompatActivity {
                                 updateUiForNoFilesFound();
                             } else {
                                 // Iterate over QuerySnapshot and add each document to userList
+
                                 fileModalList.clear();
                                 for (DocumentSnapshot document : task.getResult()) {
                                     String name = document.getString("name");
@@ -276,7 +280,9 @@ public class FileDashbaordActivity extends AppCompatActivity {
     }
 
     private void uploadFile(Uri uri) {
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(Constants.UserFilesPath);
+
+        String userFilesPath = "User-Files/" + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child(userFilesPath);
 
         String fileName = getFileName(uri);
         String fileExtension = getFileExtension(uri);

@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.graphicalauthenticator.Constants;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityEmailRegistrationBinding;
 import com.example.graphicalauthenticator.Modal.User;
@@ -119,6 +120,9 @@ public class EmailRegistrationActivity extends AppCompatActivity {
                                         Log.d("TAG", "User added with ID: " + userId);
 //                                        Toast.makeText(EmailRegistrationActivity.this, "Registered successfully", Toast.LENGTH_SHORT).show();
 //                                        new ActivitySwitchManager(EmailRegistrationActivity.this, ImageAuthActivity.class).openActivity();
+//                                        Constants.UserAuthID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+                                        Log.d("TAG", "onCreate UID: Registration Done : " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+
                                         Intent intent = new Intent(EmailRegistrationActivity.this, ImageAuthActivity.class);
                                         intent.putExtra(CREATE_NEW_SIGNATURE, true);
                                         startActivity(intent);

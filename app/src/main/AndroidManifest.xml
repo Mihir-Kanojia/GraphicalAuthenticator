@@ -9,6 +9,7 @@
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         tools:ignore="ScopedStorage" />
 
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/authentication"
@@ -50,5 +51,4 @@
             android:name=".MainActivity"
             android:exported="false" />
     </application>
-
 </manifest>

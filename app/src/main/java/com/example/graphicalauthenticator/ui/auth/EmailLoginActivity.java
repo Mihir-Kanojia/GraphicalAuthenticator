@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.example.graphicalauthenticator.Constants;
 import com.example.graphicalauthenticator.MainActivity;
 import com.example.graphicalauthenticator.R;
 import com.example.graphicalauthenticator.databinding.ActivityEmailLoginBinding;
@@ -53,9 +54,12 @@ public class EmailLoginActivity extends AppCompatActivity {
 
             FirebaseUser currentUser = mAuth.getCurrentUser();
             if (currentUser != null) {
+                Log.d("TAG", "onCreate UID: LoginActivity already loggedIn: " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
+
 //            new ActivitySwitchManager(this, MainActivity.class).openActivity();
 //            Toast.makeText(this, "Already login", Toast.LENGTH_SHORT).show();
                 Log.d("TAG", "onCreate: I am called");
+//                Constants.UserAuthID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
                 Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
                 intent.putExtra(AUTH_SIGNATURE, true);
                 startActivity(intent);
@@ -115,6 +119,8 @@ public class EmailLoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d("TAG", "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
+                            Log.d("TAG", "onCreate UID: FileDashboardActivity: " + user.getUid());
+
                             updateUI(user);
                         } else {
                             // If sign in fails, display a message to the user.
@@ -126,6 +132,8 @@ public class EmailLoginActivity extends AppCompatActivity {
                     }
 
                     private void updateUI(FirebaseUser user) {
+//                        Constants.UserAuthID = Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid();
+
 
 //                        Toast.makeText(EmailLoginActivity.this, "New login", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
