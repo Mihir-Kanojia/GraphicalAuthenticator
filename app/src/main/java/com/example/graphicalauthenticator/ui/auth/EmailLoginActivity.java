@@ -1,10 +1,12 @@
 package com.example.graphicalauthenticator.ui.auth;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.databinding.DataBindingUtil;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -22,6 +24,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.scottyab.rootbeer.RootBeer;
 
 import java.util.Objects;
 
@@ -38,41 +41,67 @@ public class EmailLoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mAuth = FirebaseAuth.getInstance();
 
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        if (currentUser != null) {
+
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted()) {
+            rootedDeviceDetectedExitApp();
+        } else {
+
+
+            mAuth = FirebaseAuth.getInstance();
+
+            FirebaseUser currentUser = mAuth.getCurrentUser();
+            if (currentUser != null) {
 //            new ActivitySwitchManager(this, MainActivity.class).openActivity();
 //            Toast.makeText(this, "Already login", Toast.LENGTH_SHORT).show();
-            Log.d("TAG", "onCreate: I am called");
-            Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
-            intent.putExtra(AUTH_SIGNATURE, true);
-            startActivity(intent);
-            finish();
+                Log.d("TAG", "onCreate: I am called");
+                Intent intent = new Intent(EmailLoginActivity.this, ImageAuthActivity.class);
+                intent.putExtra(AUTH_SIGNATURE, true);
+                startActivity(intent);
+                finish();
+            }
+
+            binding = DataBindingUtil.setContentView(this, R.layout.activity_email_login);
+            setContentView(binding.getRoot());
+
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+            Log.d("TAG", "onCreate: EmailLoginActivity");
+            binding.btnNext.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String email = binding.etEmail.getText().toString();
+                    String password = binding.etPassword.getText().toString();
+                    verifyAndSignInUser(email, password);
+                }
+
+
+            });
+
+            binding.tvRegisterHere.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    new ActivitySwitchManager(EmailLoginActivity.this, EmailRegistrationActivity.class).openActivity();
+                }
+            });
+
         }
+    }
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_email_login);
-        setContentView(binding.getRoot());
+    private void rootedDeviceDetectedExitApp() {
 
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
-        Log.d("TAG", "onCreate: EmailLoginActivity");
-        binding.btnNext.setOnClickListener(new View.OnClickListener() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Device is Rooted");
+        builder.setMessage("This app cannot be run on rooted devices for security reasons. Please unroot your device and try again.");
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                String email = binding.etEmail.getText().toString();
-                String password = binding.etPassword.getText().toString();
-                verifyAndSignInUser(email, password);
-            }
-
-
-        });
-
-        binding.tvRegisterHere.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                new ActivitySwitchManager(EmailLoginActivity.this, EmailRegistrationActivity.class).openActivity();
+            public void onClick(DialogInterface dialog, int which) {
+                finish(); // exit the app
             }
         });
+        builder.setCancelable(false); // prevent the user from dismissing the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
 
     }
 

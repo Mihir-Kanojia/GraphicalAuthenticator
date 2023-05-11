@@ -83,6 +83,10 @@ dependencies {
     implementation 'com.google.firebase:firebase-core:21.1.1'
     implementation platform('com.google.firebase:firebase-bom:31.0.1')
     implementation 'com.google.firebase:firebase-auth'
+
+    //root check lib
+    implementation 'com.scottyab:rootbeer-lib:0.1.0'
+
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -1,6 +1,7 @@
 package com.example.graphicalauthenticator.ui.auth;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -9,6 +10,7 @@ import androidx.databinding.DataBindingUtil;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
@@ -43,6 +45,7 @@ import com.google.firebase.storage.FileDownloadTask;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.scottyab.rootbeer.RootBeer;
 //import com.example.graphicalauthenticator.ui.view.PaintView;
 
 import java.io.ByteArrayOutputStream;
@@ -89,27 +92,31 @@ public class ImageAuthActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted()) {
+            rootedDeviceDetectedExitApp();
+        } else {
 
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
-        setContentView(binding.getRoot());
-        storage = FirebaseStorage.getInstance();
-        storageRef = storage.getReference();
-        imagesRef = storageRef.child("signatures/" + UserAuthID + ".jpg");
+            binding = DataBindingUtil.setContentView(this, R.layout.activity_image_auth);
+            setContentView(binding.getRoot());
+            storage = FirebaseStorage.getInstance();
+            storageRef = storage.getReference();
+            imagesRef = storageRef.child("signatures/" + UserAuthID + ".jpg");
 
 
-        Intent intent = getIntent();
-        isNewSignature = intent.getBooleanExtra(CREATE_NEW_SIGNATURE, false);
-        isAuthSignature = intent.getBooleanExtra(AUTH_SIGNATURE, false);
+            Intent intent = getIntent();
+            isNewSignature = intent.getBooleanExtra(CREATE_NEW_SIGNATURE, false);
+            isAuthSignature = intent.getBooleanExtra(AUTH_SIGNATURE, false);
 //        Toast.makeText(this, "isNewSignature: " + isNewSignature, Toast.LENGTH_SHORT).show();
 //        Toast.makeText(this, "isAuthSignature: " + isAuthSignature, Toast.LENGTH_SHORT).show();
-        if (isNewSignature) {
-            binding.btnVerify.setText(getString(R.string.next));
-            firstSignature = true;
-            updateUiAccordingly(1);
-        } else {
-            updateUiAccordingly(3);
-        }
+            if (isNewSignature) {
+                binding.btnVerify.setText(getString(R.string.next));
+                firstSignature = true;
+                updateUiAccordingly(1);
+            } else {
+                updateUiAccordingly(3);
+            }
 
 //        verifyStoragePermissions(this);
 
@@ -155,87 +162,87 @@ public class ImageAuthActivity extends AppCompatActivity {
 ////////////////////////////////////////
 
 
-        ConstraintLayout parent = findViewById(R.id.constraintLayout);
-        myDrawView = new MyDrawView(ImageAuthActivity.this);
-        parent.addView(myDrawView);
+            ConstraintLayout parent = findViewById(R.id.constraintLayout);
+            myDrawView = new MyDrawView(ImageAuthActivity.this);
+            parent.addView(myDrawView);
 
 //        View view = binding.included;
 //        paintView = view.findViewById(R.id.paintView);
 //        drawingView = view.findViewById(R.id.paintView);
 
-        drawingView = findViewById(R.id.paintView);
+            drawingView = findViewById(R.id.paintView);
 
 
-        binding.btnVerify.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d("TAG", "onClick: BUTTAON CLicked");
+            binding.btnVerify.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("TAG", "onClick: BUTTAON CLicked");
 //                Bitmap b = loadBitmapFromView(myDrawView);
 //                Bitmap b;
-                drawingView.post(new Runnable() {
-                    @Override
-                    public void run() {
+                    drawingView.post(new Runnable() {
+                        @Override
+                        public void run() {
 
-                        Bitmap signatureBitmap = loadBitmapFromView(myDrawView);
+                            Bitmap signatureBitmap = loadBitmapFromView(myDrawView);
 //                        Bitmap b = loadBitmapFromView(findViewById(R.id.constraintLayout));
 //                        ImageView imageView = findViewById(R.id.imageView);
 //                        imageView.buildDrawingCache();
 //                        Bitmap b = imageView.getDrawingCache();
 //                        findViewById(R.id.imageView2).setBackground(new BitmapDrawable(getResources(), b));
 
-                        File cacheDir = ImageAuthActivity.this.getCacheDir();
-                        File signatureFile1 = new File(cacheDir, "signature1.png");
-                        File signatureFile2 = new File(cacheDir, "signature2.png");
-                        try {
+                            File cacheDir = ImageAuthActivity.this.getCacheDir();
+                            File signatureFile1 = new File(cacheDir, "signature1.png");
+                            File signatureFile2 = new File(cacheDir, "signature2.png");
+                            try {
 
-                            FileOutputStream outputStream1, outputStream2;
+                                FileOutputStream outputStream1, outputStream2;
 
-                            if (isAuthSignature) {
+                                if (isAuthSignature) {
 
-                                outputStream2 = new FileOutputStream(signatureFile2);
-                                signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
-//                                checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
-
-                                File localFile = File.createTempFile("images", "jpg");
-                                imagesRef.getFile(localFile)
-                                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                                            @Override
-                                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                                // Local file created successfully, do something with it
-//                                                Toast.makeText(ImageAuthActivity.this, "Going to check in Python module", Toast.LENGTH_SHORT).show();
-                                                checkPythonModule(signatureFile2, localFile, signatureBitmap);
-                                            }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
-                                            @Override
-                                            public void onFailure(@NonNull Exception exception) {
-                                                // Handle any errors
-                                                Toast.makeText(ImageAuthActivity.this, "Unexpected problem occurred: " + exception, Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-
-
-                            } else if (isNewSignature) {
-                                if (firstSignature) {
-                                    outputStream1 = new FileOutputStream(signatureFile1);
-                                    signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream1);
-                                    updateUiAccordingly(2);
-                                    firstSignature = false;
-                                } else {
                                     outputStream2 = new FileOutputStream(signatureFile2);
                                     signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
-                                    checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
+//                                checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
+
+                                    File localFile = File.createTempFile("images", "jpg");
+                                    imagesRef.getFile(localFile)
+                                            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                                @Override
+                                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                                    // Local file created successfully, do something with it
+//                                                Toast.makeText(ImageAuthActivity.this, "Going to check in Python module", Toast.LENGTH_SHORT).show();
+                                                    checkPythonModule(signatureFile2, localFile, signatureBitmap);
+                                                }
+                                            })
+                                            .addOnFailureListener(new OnFailureListener() {
+                                                @Override
+                                                public void onFailure(@NonNull Exception exception) {
+                                                    // Handle any errors
+                                                    Toast.makeText(ImageAuthActivity.this, "Unexpected problem occurred: " + exception, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+
+
+                                } else if (isNewSignature) {
+                                    if (firstSignature) {
+                                        outputStream1 = new FileOutputStream(signatureFile1);
+                                        signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream1);
+                                        updateUiAccordingly(2);
+                                        firstSignature = false;
+                                    } else {
+                                        outputStream2 = new FileOutputStream(signatureFile2);
+                                        signatureBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream2);
+                                        checkPythonModule(signatureFile1, signatureFile2, signatureBitmap);
+                                    }
                                 }
+
+
+                            } catch (FileNotFoundException e) {
+                                Log.d("TAG", "run: EXCEPTION aaya");
+                                e.printStackTrace();
+                            } catch (IOException e) {
+                                Log.d("TAG", "run: EXCEPTION aaya");
+                                throw new RuntimeException(e);
                             }
-
-
-                        } catch (FileNotFoundException e) {
-                            Log.d("TAG", "run: EXCEPTION aaya");
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            Log.d("TAG", "run: EXCEPTION aaya");
-                            throw new RuntimeException(e);
-                        }
 
 
 //                        try (FileOutputStream outputStream = new FileOutputStream(signatureFile1)) {
@@ -245,7 +252,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 //                            e.printStackTrace();
 //                        }
 
-                        Log.d("TAG", "run: TESTTTT");
+                            Log.d("TAG", "run: TESTTTT");
 //                        Toast.makeText(ImageAuthActivity.this, "Test", Toast.LENGTH_SHORT).show();
 //                        addJpgSignatureToGallery(signatureBitmap);
 //                        if (addJpgSignatureToGallery(signatureBitmap)) {
@@ -253,21 +260,21 @@ public class ImageAuthActivity extends AppCompatActivity {
 //                        } else {
 //                            Toast.makeText(ImageAuthActivity.this, "Unable to store the signature", Toast.LENGTH_SHORT).show();
 //                        }
-                    }
-                });
+                        }
+                    });
 
 
-            }
+                }
 
-        });
+            });
 
 
-        binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                myDrawView.clear();
-            }
-        });
+            binding.btnClearScreen.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    myDrawView.clear();
+                }
+            });
 //        if (!Python.isStarted())
 //            Python.start(new AndroidPlatform(this));
 //
@@ -277,6 +284,7 @@ public class ImageAuthActivity extends AppCompatActivity {
 //
 //        obj = pyObj.callAttr("main", "2", "2");
 //        Log.d("TAG", "onCreate: obj" + obj.toString());
+        }
     }
 
     private void updateUiAccordingly(int uiCase) {
@@ -316,6 +324,23 @@ public class ImageAuthActivity extends AppCompatActivity {
 //    private void updateSignature2(File signature) {
 //        signature2 = signature;
 //    }
+
+    private void rootedDeviceDetectedExitApp() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Device is Rooted");
+        builder.setMessage("This app cannot be run on rooted devices for security reasons. Please unroot your device and try again.");
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish(); // exit the app
+            }
+        });
+        builder.setCancelable(false); // prevent the user from dismissing the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
+    }
 
     private void checkPythonModule(File signatureFile1, File signatureFile2, Bitmap signatureBitmap) {
         Log.d("TAG", "checkPythonModule: INSIDE MODULE");

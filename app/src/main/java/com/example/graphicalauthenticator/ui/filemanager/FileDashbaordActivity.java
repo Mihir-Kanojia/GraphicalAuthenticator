@@ -35,6 +35,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -43,6 +44,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageMetadata;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.scottyab.rootbeer.RootBeer;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,55 +62,67 @@ public class FileDashbaordActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_file_dashbaord);
-        setContentView(binding.getRoot());
-        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
 
-        filesAdapter = new FilesAdapter(fileModalList, FileDashbaordActivity.this);
-        binding.rvFiles.setHasFixedSize(false);
-        binding.rvFiles.setLayoutManager(new LinearLayoutManager(this));
+        RootBeer rootBeer = new RootBeer(this);
+        if (rootBeer.isRooted()) {
+            rootedDeviceDetectedExitApp();
+        } else if (currentUser != null) {
+            // User is already authenticated, redirect to the main activity
+            nonAuthenticatedUserFoundExitApp();
 
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        fetchFilesAndUpdateRvAdapter();
+        } else {
+
+            binding = DataBindingUtil.setContentView(this, R.layout.activity_file_dashbaord);
+            setContentView(binding.getRoot());
+            AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
+
+            filesAdapter = new FilesAdapter(fileModalList, FileDashbaordActivity.this);
+            binding.rvFiles.setHasFixedSize(false);
+            binding.rvFiles.setLayoutManager(new LinearLayoutManager(this));
+
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            fetchFilesAndUpdateRvAdapter();
 
 
 // Define an ActivityResultLauncher to launch the file picker and receive the result
-        ActivityResultLauncher<String> filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (true) {
-                        showConfirmationDialog(uri);
+            ActivityResultLauncher<String> filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+                    uri -> {
+                        if (true) {
+                            showConfirmationDialog(uri);
+                        }
                     }
-                }
-        );
+            );
 
 
 // Launch the file picker when the user clicks the button
-        binding.btnUpload.setOnClickListener(view -> {
-            filePickerLauncher.launch("*/*"); // Allow any type of file to be selected
-        });
+            binding.btnUpload.setOnClickListener(view -> {
+                filePickerLauncher.launch("*/*"); // Allow any type of file to be selected
+            });
 
-        binding.btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                AlertDialog.Builder dialog = new AlertDialog.Builder(FileDashbaordActivity.this);
-                dialog.setTitle("Logout Confirmation")
-                        .setMessage("Are you sure you want to log out? This will end your current session and you will need to log in again to access your account.\n")
-                        .setCancelable(true)
-                        .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                logOutUserFromCurrentSession();
-                            }
-                        })
-                        .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                dialog.create().show();
-            }
-        });
+            binding.btnLogout.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    AlertDialog.Builder dialog = new AlertDialog.Builder(FileDashbaordActivity.this);
+                    dialog.setTitle("Logout Confirmation")
+                            .setMessage("Are you sure you want to log out? This will end your current session and you will need to log in again to access your account.\n")
+                            .setCancelable(true)
+                            .setPositiveButton("Logout", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    logOutUserFromCurrentSession();
+                                }
+                            })
+                            .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialogInterface, int i) {
+                                    dialogInterface.dismiss();
+                                }
+                            });
+                    dialog.create().show();
+                }
+            });
 
 //        FileModal model = new FileModal("Filename", 24, "pdf", "fileurll.com");
 //        fileModalList.add(model);
@@ -119,33 +133,49 @@ public class FileDashbaordActivity extends AppCompatActivity {
 //        fileModalList.add(model);
 //        fileModalList.add(model);
 
-        binding.rvFiles.setAdapter(filesAdapter);
+            binding.rvFiles.setAdapter(filesAdapter);
 
-        filesAdapter.setOnItemClickListener(position -> {
-            if (position >= 0) {
-                String fileUrl = fileModalList.get(position).url;
-                StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
-                storageReference.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
-                    @Override
-                    public void onSuccess(StorageMetadata storageMetadata) {
-                        String fileName = storageMetadata.getName();
-                        String mimeType = storageMetadata.getContentType();
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(Uri.parse(fileUrl), mimeType);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(Intent.createChooser(intent, "Open " + fileName + " with"));
-                    }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle any errors
-                    }
-                });
+            filesAdapter.setOnItemClickListener(position -> {
+                if (position >= 0) {
+                    String fileUrl = fileModalList.get(position).url;
+                    StorageReference storageReference = FirebaseStorage.getInstance().getReferenceFromUrl(fileUrl);
+                    storageReference.getMetadata().addOnSuccessListener(new OnSuccessListener<StorageMetadata>() {
+                        @Override
+                        public void onSuccess(StorageMetadata storageMetadata) {
+                            String fileName = storageMetadata.getName();
+                            String mimeType = storageMetadata.getContentType();
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(Uri.parse(fileUrl), mimeType);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(Intent.createChooser(intent, "Open " + fileName + " with"));
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle any errors
+                        }
+                    });
 
-            }
+                }
 
-        });
+            });
+        }
     } //  onCreate() closed
+
+    private void nonAuthenticatedUserFoundExitApp() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Something went wrong");
+        builder.setMessage("Please update the application");
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish(); // exit the app
+            }
+        });
+        builder.setCancelable(false); // prevent the user from dismissing the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
 
     private void logOutUserFromCurrentSession() {
         FirebaseAuth mAuth = FirebaseAuth.getInstance();
@@ -153,6 +183,23 @@ public class FileDashbaordActivity extends AppCompatActivity {
         Intent intent = new Intent(FileDashbaordActivity.this, EmailLoginActivity.class);
         startActivity(intent);
         finish();
+    }
+
+    private void rootedDeviceDetectedExitApp() {
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Device is Rooted");
+        builder.setMessage("This app cannot be run on rooted devices for security reasons. Please unroot your device and try again.");
+        builder.setPositiveButton("Exit App", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                finish(); // exit the app
+            }
+        });
+        builder.setCancelable(false); // prevent the user from dismissing the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
 
@@ -181,15 +228,15 @@ public class FileDashbaordActivity extends AppCompatActivity {
                                     FileModal modal = new FileModal(name, size, type, url);
                                     modal.setUploadDateTime(upDate);
                                     fileModalList.add(modal);
-                                    FileModal model = new FileModal("Filename", 24, "pdf", "fileurll.com");
-                                    fileModalList.add(model);
-                                    fileModalList.add(model);
-                                    fileModalList.add(model);
-                                    model = new FileModal("Filename", 24, "pdaf", "fileurll.com");
-                                    fileModalList.add(model);
-                                    fileModalList.add(model);
-                                    fileModalList.add(model);
-                                    fileModalList.add(model);
+//                                    FileModal model = new FileModal("Filename", 24, "pdf", "fileurll.com");
+//                                    fileModalList.add(model);
+//                                    fileModalList.add(model);
+//                                    fileModalList.add(model);
+//                                    model = new FileModal("Filename", 24, "pdaf", "fileurll.com");
+//                                    fileModalList.add(model);
+//                                    fileModalList.add(model);
+//                                    fileModalList.add(model);
+//                                    fileModalList.add(model);
                                 }
 
 
