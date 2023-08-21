@@ -82,6 +82,7 @@ public class EmailLoginActivity extends AppCompatActivity {
 
             });
 
+
             binding.tvRegisterHere.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

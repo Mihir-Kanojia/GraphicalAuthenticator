@@ -88,7 +88,6 @@ public class FileDashbaordActivity extends AppCompatActivity {
             Log.d("TAG", "onCreate UID: FileDashboardActivity: " + Objects.requireNonNull(FirebaseAuth.getInstance().getCurrentUser()).getUid());
 
 
-// Define an ActivityResultLauncher to launch the file picker and receive the result
             ActivityResultLauncher<String> filePickerLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
                     uri -> {
                         if (true) {
@@ -98,9 +97,8 @@ public class FileDashbaordActivity extends AppCompatActivity {
             );
 
 
-// Launch the file picker when the user clicks the button
             binding.btnUpload.setOnClickListener(view -> {
-                filePickerLauncher.launch("*/*"); // Allow any type of file to be selected
+                filePickerLauncher.launch("*/*"); // Allow any type of file
             });
 
             binding.btnLogout.setOnClickListener(new View.OnClickListener() {

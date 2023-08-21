@@ -10,11 +10,11 @@
     <ImageView
         android:id="@+id/fileImageView"
         android:layout_width="40dp"
-        android:src="@drawable/file_pdf"
         android:layout_height="50dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="10dp"
         android:contentDescription="@string/todo"
+        android:src="@drawable/file_pdf"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -48,8 +48,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
-            android:text="Uploaded 2 mins ago"
             android:lines="1"
+            android:text="Uploaded 2 mins ago"
             android:textColor="@color/box_stroke_color"
             android:textSize="12sp"
             app:layout_constraintStart_toStartOf="parent"
@@ -61,13 +61,23 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:drawablePadding="4dp"
-            android:text="24MB"
             android:lines="1"
+            android:text="24MB"
             android:textColor="@color/box_stroke_color"
             app:drawableStartCompat="@drawable/ic_size_circle"
             app:layout_constraintBottom_toBottomOf="@id/dateAndTime"
             app:layout_constraintStart_toEndOf="@+id/dateAndTime"
             app:layout_constraintTop_toTopOf="@+id/dateAndTime" />
+
+        <ImageView
+            android:id="@+id/deleteBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/delete_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:tint="#A2A5B0" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
