@@ -11,5 +11,6 @@
     <color name="text_col2">#26262F</color>
     <color name="text_gray">#4B4B4B</color>
     <color name="box_stroke_color">#C8C8C8</color>
+    <color name="bottom_bg">#FF585D</color>
 
 </resources>
